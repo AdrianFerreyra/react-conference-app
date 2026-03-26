@@ -1,24 +1,23 @@
 import { useState, useEffect } from 'react'
 import type { Event } from '../domain/Event'
 import type { Clock } from '../application/ports/Clock'
+import type { ScheduleRepository } from '../application/ports/ScheduleRepository'
 import { getSchedule } from '../application/useCases/getSchedule'
 import { getCurrentEvent } from '../application/useCases/getCurrentEvent'
-import { InMemoryScheduleRepository } from './adapters/InMemoryScheduleRepository'
-
-const repository = new InMemoryScheduleRepository()
 
 interface Props {
   clock: Clock
+  repository: ScheduleRepository
 }
 
-export default function App({ clock }: Props) {
+export default function App({ clock, repository }: Props) {
   const [dayCount, setDayCount] = useState(0)
   const [currentEvent, setCurrentEvent] = useState<Event | null | undefined>(undefined)
 
   useEffect(() => {
     getSchedule(repository).then((days) => setDayCount(days.length))
     getCurrentEvent(repository, clock).then(setCurrentEvent)
-  }, [clock])
+  }, [clock, repository])
 
   return (
     <main>

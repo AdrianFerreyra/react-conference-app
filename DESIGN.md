@@ -55,3 +55,18 @@ when using Vite HMR.
 
 In tests, a `Clock` instance is injected directly into the component and use
 cases, so no env var mocking is needed.
+
+### Controlling the Schedule Data Source (`VITE_SCHEDULE_SOURCE`)
+
+The schedule data source is selected at startup via `VITE_SCHEDULE_SOURCE`:
+
+| Value | Behaviour |
+|---|---|
+| *(unset)* | HTTP fetch with bundled JSON as fallback (production default) |
+| `"local"` | Bundled JSON only — useful when the conference site is unreachable |
+| `"http"` | Live HTTP fetch only, no fallback — useful for verifying the parser |
+
+```bash
+VITE_SCHEDULE_SOURCE=local npm run dev    # offline-safe
+VITE_SCHEDULE_SOURCE=http npm run dev     # test live parsing
+```

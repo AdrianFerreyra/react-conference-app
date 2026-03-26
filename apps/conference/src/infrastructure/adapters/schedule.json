@@ -1,0 +1,133 @@
+{
+  "conference": {
+    "name": "React.js Conf 2015",
+    "dates": ["2015-01-28", "2015-01-29"],
+    "location": "Facebook HQ, CA"
+  },
+  "schedule": {
+    "2015-01-28": [
+      {
+        "time": "10:00-10:30am",
+        "title": "Keynote",
+        "speakers": ["Tom Occhino", "Christopher Chedeau"],
+        "description": "Opening remarks"
+      },
+      {
+        "time": "10:30-11:00am",
+        "title": "Tweak your page in real time, without leaving the comfort of your editor",
+        "speakers": ["Brenton Simpson"],
+        "description": "Bringing instant-feedback dev tools into editors with JSX, JS Harmony, and Sass support for real-time changes across devices"
+      },
+      {
+        "time": "11:30-12:00pm",
+        "title": "Unlocking the structure of your React applications with the AST",
+        "speakers": ["Gurdas Nijor"],
+        "description": "Using Esprima parser and abstract syntax trees to unlock new development applications within React"
+      },
+      {
+        "time": "12:00-12:30pm",
+        "title": "Data fetching for React applications at Facebook",
+        "speakers": ["Daniel Schafer", "Jing Chen"],
+        "description": "Simplifying data fetching approaches for complex applications using React and Flux architecture"
+      },
+      {
+        "time": "2:00-2:30pm",
+        "title": "Communicating with channels",
+        "speakers": ["James Long"],
+        "description": "Exploring goroutine-style coordination using js-csp library for complex data flow in React apps"
+      },
+      {
+        "time": "2:30-3:00pm",
+        "title": "react-router increases your productivity",
+        "speakers": ["Michael Jackson"],
+        "description": "Building application screens and flows while maintaining URL synchronization"
+      },
+      {
+        "time": "3:30-4:00pm",
+        "title": "Full Stack Flux",
+        "speakers": ["Pete Hunt"],
+        "description": "React bindings to constraint solvers for addressing CSS layout challenges"
+      },
+      {
+        "time": "4:00-4:30pm",
+        "title": "Making your app fast with high-performance components",
+        "speakers": ["Jason Bonta"],
+        "description": "Achieving scalable performance through intentional component hierarchy and data management"
+      },
+      {
+        "time": "5:00-5:30pm",
+        "title": "Format data and strings in any language with FormatJS and react-intl",
+        "speakers": ["Eric Ferraiuolo"],
+        "description": "Internationalizing React applications for 150+ languages in minimal file size"
+      },
+      {
+        "time": "5:30-6:00pm",
+        "title": "Hype!",
+        "speakers": ["Ryan Florence"],
+        "description": "Demonstrating unconventional and boundary-pushing React implementations"
+      }
+    ],
+    "2015-01-29": [
+      {
+        "time": "10:00-10:30am",
+        "title": "React Native",
+        "speakers": ["Christopher Chedeau"],
+        "description": "React framework extending beyond web browsers"
+      },
+      {
+        "time": "10:30-11:00am",
+        "title": "The complementarity of React and Web Components",
+        "speakers": ["Andrew Rota"],
+        "description": "Combining React's component approach with native HTML Web Components for powerful applications"
+      },
+      {
+        "time": "11:30-12:00pm",
+        "title": "Immutable Data and React",
+        "speakers": ["Lee Byron"],
+        "description": "Using persistent immutable data structures with Immutable.js for memoization and safer state management"
+      },
+      {
+        "time": "12:00-12:30pm",
+        "title": "Beyond the DOM: How Netflix plans to enhance your television experience",
+        "speakers": ["Jafar Husain"],
+        "description": "Adapting React for canvas-based APIs on smart TVs and game consoles without traditional DOM"
+      },
+      {
+        "time": "2:00-2:30pm",
+        "title": "Scalable Data Visualization",
+        "speakers": ["Zach Nation"],
+        "description": "Rendering large-scale data efficiently using React with canvas/SVG and server-side transformation"
+      },
+      {
+        "time": "2:30-3:00pm",
+        "title": "Refracting React",
+        "speakers": ["David Nolen"],
+        "description": "Om library design patterns for ClojureScript bindings and persistent data structures"
+      },
+      {
+        "time": "3:30-4:00pm",
+        "title": "Flux Panel",
+        "speakers": ["Bill Fisher"],
+        "description": "Discussion with representatives from Yahoo, Airbnb, SoundCloud, and Facebook on architectural patterns"
+      },
+      {
+        "time": "4:00-4:30pm",
+        "title": "Codecademy's approach to component communication",
+        "speakers": ["Bonnie Eisenman"],
+        "description": "Dynamic meta-programming adapters for flexible component interaction in learning environments"
+      },
+      {
+        "time": "5:00-5:30pm",
+        "title": "Static typing with Flow and TypeScript",
+        "speakers": ["James Brantly"],
+        "description": "Implementing compile-time type checking in React applications using Flow and TypeScript"
+      },
+      {
+        "time": "5:30-6:00pm",
+        "title": "Q&A with the team",
+        "speakers": ["Multiple Facebook engineers"],
+        "description": "Interactive session with core React team members"
+      }
+    ]
+  }
+}

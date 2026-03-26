@@ -17,6 +17,7 @@ export default function App({ clock, repository }: Props) {
   const [currentEvent, setCurrentEvent] = useState<Event | null | undefined>(undefined)
   const [upcomingEvents, setUpcomingEvents] = useState<Event[]>([])
   const [currentTime, setCurrentTime] = useState<Date>(() => clock.now())
+  const [selectedUpcomingTitle, setSelectedUpcomingTitle] = useState<string | null>(null)
 
   const activeClock = useMemo<Clock>(() => ({ now: () => currentTime }), [currentTime])
 
@@ -74,12 +75,18 @@ export default function App({ clock, repository }: Props) {
             <p className="section-label">Up next</p>
             <div className="upcoming-list">
               {upcomingEvents.map((event) => (
-                <article key={event.title} className="upcoming-card">
+                <article
+                  key={event.title}
+                  className="upcoming-card"
+                  onClick={() => setSelectedUpcomingTitle(
+                    selectedUpcomingTitle === event.title ? null : event.title
+                  )}
+                >
                   <div className="upcoming-card__header">
                     <h2 className="upcoming-card__title">{event.title}</h2>
                     <span className="upcoming-card__time">{event.time}</span>
                   </div>
-                  {event.description && (
+                  {selectedUpcomingTitle === event.title && event.description && (
                     <p className="upcoming-card__description">{event.description}</p>
                   )}
                   {event.speakers.length > 0 && (

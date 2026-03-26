@@ -34,6 +34,15 @@ export class HttpScheduleRepository implements ScheduleRepository {
   parseHtml(html: string): Day[] {
     const doc = new DOMParser().parseFromString(html, 'text/html')
 
+    // Build a map of anchor name → description from the .talk sections outside the table
+    const descriptionByAnchor = new Map<string, string>()
+    for (const talk of doc.querySelectorAll('.talk')) {
+      const anchor = talk.querySelector('a.anchor')?.getAttribute('name')
+      if (!anchor) continue
+      const text = talk.querySelector('.description')?.textContent?.trim() ?? ''
+      descriptionByAnchor.set(anchor, text)
+    }
+
     const days: Day[] = CONFERENCE_DATES.map((date) => ({ date, events: [] }))
 
     const rows = doc.querySelectorAll('table.schedule-table tbody tr:not(.special)')
@@ -62,7 +71,10 @@ export class HttpScheduleRepository implements ScheduleRepository {
           ? speakersText.split(' and ').map((name) => ({ name: name.trim() }))
           : []
 
-        days[colIndex].events.push({ title, time, speakers, description: '' })
+        const anchor = sessionLink.getAttribute('href')?.replace(/^#/, '') ?? ''
+        const description = descriptionByAnchor.get(anchor) ?? ''
+
+        days[colIndex].events.push({ title, time, speakers, description })
       })
     }
 

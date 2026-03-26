@@ -1,7 +1,9 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { HttpScheduleRepository } from '../HttpScheduleRepository'
 
-// Minimal HTML fixture that mirrors the structure of the official site
+// Minimal HTML fixture that mirrors the structure of the official site:
+// - schedule table with links referencing anchor names
+// - .talk sections *outside* the table, each with an a.anchor and a .description
 const SCHEDULE_HTML = `
 <!DOCTYPE html>
 <html><body>
@@ -54,6 +56,26 @@ const SCHEDULE_HTML = `
     </tr>
   </tbody>
 </table>
+
+<div class="talk">
+  <a class="anchor" name="keynote"></a>
+  <div class="description">Opening remarks about React</div>
+</div>
+<div class="talk">
+  <a class="anchor" name="react-native"></a>
+  <div class="description">Building native apps with React</div>
+</div>
+<div class="talk">
+  <a class="anchor" name="channels"></a>
+  <div class="description"></div>
+</div>
+<div class="talk">
+  <a class="anchor" name="data-viz"></a>
+</div>
+<div class="talk">
+  <a class="anchor" name="hype"></a>
+  <div class="description">Closing talk</div>
+</div>
 </body></html>
 `
 
@@ -154,6 +176,27 @@ describe('HttpScheduleRepository', () => {
       // 3 talk rows × 2 columns, but Q&A has no speaker link on day 2 col — still has <a>
       expect(days[0].events).toHaveLength(3) // Keynote, Channels, Hype!
       expect(days[1].events).toHaveLength(3) // React Native, Data Viz, Q&A
+    })
+
+    it('extracts description from .talk .description', () => {
+      const repo = new HttpScheduleRepository()
+      const days = repo.parseHtml(SCHEDULE_HTML)
+      const keynote = days[0].events.find((e) => e.title === 'Keynote')
+      expect(keynote?.description).toBe('Opening remarks about React')
+    })
+
+    it('leaves description empty when .description div is absent', () => {
+      const repo = new HttpScheduleRepository()
+      const days = repo.parseHtml(SCHEDULE_HTML)
+      const qa = days[1].events.find((e) => e.title === 'Q&A with the team')
+      expect(qa?.description).toBe('')
+    })
+
+    it('leaves description empty when .description div has no text', () => {
+      const repo = new HttpScheduleRepository()
+      const days = repo.parseHtml(SCHEDULE_HTML)
+      const channels = days[0].events.find((e) => e.title === 'Communicating with channels')
+      expect(channels?.description).toBe('')
     })
   })
 })

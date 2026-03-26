@@ -37,3 +37,21 @@ PORT=5174 npm run test:e2e
 ```
 
 `strictPort: true` is set in Vite so the dev server fails immediately if the port is already occupied, preventing silent port collisions.
+
+### Controlling the Perceived Current Time (`VITE_NOW`)
+
+The `getCurrentEvent` use case consults a `Clock` port. In production the clock
+uses `new Date()`. For local development and testing, the perceived time can be
+overridden by setting `VITE_NOW` to any ISO 8601 local datetime string:
+
+```bash
+VITE_NOW=2015-01-28T10:15:00 npm run dev   # mid-Keynote
+VITE_NOW=2015-01-29T14:05:00 npm run dev   # mid-afternoon day 2
+```
+
+The variable is read once at page load (`main.tsx`); the dev server does **not**
+need to be restarted between overrides — a regular browser refresh is sufficient
+when using Vite HMR.
+
+In tests, a `Clock` instance is injected directly into the component and use
+cases, so no env var mocking is needed.

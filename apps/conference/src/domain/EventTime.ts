@@ -45,3 +45,9 @@ export function isEventOngoing(event: Event, date: string, now: Date): boolean {
   const { start, end } = parseEventTimeRange(event.time, date)
   return now >= start && now < end
 }
+
+/** Returns true when the event starts strictly after `now` on the given date. */
+export function isEventUpcoming(event: Event, date: string, now: Date): boolean {
+  const { start } = parseEventTimeRange(event.time, date)
+  return start > now
+}

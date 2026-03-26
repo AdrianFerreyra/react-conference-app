@@ -19,13 +19,18 @@ const clock: Clock = import.meta.env.VITE_NOW
   : { now: () => new Date() }
 
 /**
- * Tries to source schedule data from the official conference website.
- * Falls back to the bundled in-memory data when the site is unavailable.
+ * Select the schedule data source:
+ *   VITE_SCHEDULE_SOURCE=local  — bundled JSON only (no network)
+ *   VITE_SCHEDULE_SOURCE=http   — live website only (no fallback)
+ *   (unset)                     — live website with JSON fallback (default)
  */
-const repository = new FallbackScheduleRepository(
-  new HttpScheduleRepository(),
-  new InMemoryScheduleRepository(),
-)
+const inMemory = new InMemoryScheduleRepository()
+const repository =
+  import.meta.env.VITE_SCHEDULE_SOURCE === 'local'
+    ? inMemory
+    : import.meta.env.VITE_SCHEDULE_SOURCE === 'http'
+      ? new HttpScheduleRepository()
+      : new FallbackScheduleRepository(new HttpScheduleRepository(), inMemory)
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

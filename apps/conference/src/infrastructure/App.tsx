@@ -5,11 +5,7 @@ import type { ScheduleRepository } from '../application/ports/ScheduleRepository
 import { getSchedule } from '../application/useCases/getSchedule'
 import { getCurrentEvent } from '../application/useCases/getCurrentEvent'
 import { getUpcomingEvents } from '../application/useCases/getUpcomingEvents'
-
-function toDatetimeLocalValue(date: Date): string {
-  const pad = (n: number) => String(n).padStart(2, '0')
-  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`
-}
+import TimeTravelBar from './components/TimeTravelBar'
 
 interface Props {
   clock: Clock
@@ -40,28 +36,11 @@ export default function App({ clock, repository }: Props) {
         )}
       </header>
 
-      <section aria-label="Time travel" className="time-travel">
-          <label>
-            Time travel:
-            <input
-              type="datetime-local"
-              data-testid="time-travel-input"
-              value={toDatetimeLocalValue(currentTime)}
-              onChange={(e) => {
-                const parsed = new Date(e.target.value)
-                if (!isNaN(parsed.getTime())) {
-                  setCurrentTime(parsed)
-                }
-              }}
-            />
-          </label>
-          <button
-            data-testid="time-travel-reset"
-            onClick={() => setCurrentTime(clock.now())}
-          >
-            Reset to now
-          </button>
-        </section>
+        <TimeTravelBar
+            currentTime={currentTime}
+            onTimeChange={setCurrentTime}
+            onReset={() => setCurrentTime(clock.now())}
+          />
 
       <main className="content">
         {currentEvent === undefined ? null : currentEvent ? (

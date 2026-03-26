@@ -26,95 +26,89 @@ const days: Day[] = [
         description: 'Opening remarks',
       },
       {
-        title: 'Tweak your page in real time',
-        time: '10:30-11:00am',
-        speakers: [{ name: 'Brenton Simpson' }],
-        description: 'Second talk',
-      },
-      {
-        title: 'Later talk',
-        time: '11:30-12:00pm',
-        speakers: [],
-        description: 'Third talk',
-      },
-    ],
-  },
-]
-
-const daysWithSimultaneous: Day[] = [
-  {
-    date: '2015-01-28',
-    events: [
-      {
         title: 'Talk A',
-        time: '10:00-10:30am',
-        speakers: [],
-        description: '',
+        time: '10:30-11:00am',
+        speakers: [{ name: 'Speaker A' }],
+        description: 'Talk A description',
       },
       {
         title: 'Talk B',
-        time: '10:00-10:30am',
-        speakers: [],
-        description: '',
+        time: '2:00-2:30pm',
+        speakers: [{ name: 'Speaker B' }],
+        description: 'Talk B description',
       },
       {
         title: 'Talk C',
-        time: '11:00-11:30am',
-        speakers: [],
-        description: '',
+        time: '2:30-3:00pm',
+        speakers: [{ name: 'Speaker C' }],
+        description: 'Talk C description',
+      },
+    ],
+  },
+  {
+    date: '2015-01-29',
+    events: [
+      {
+        title: 'Day 2 Keynote',
+        time: '10:00-10:30am',
+        speakers: [{ name: 'Speaker D' }],
+        description: 'Day 2 opening',
+      },
+      {
+        title: 'Day 2 Talk',
+        time: '10:30-11:00am',
+        speakers: [{ name: 'Speaker E' }],
+        description: 'Day 2 second talk',
       },
     ],
   },
 ]
 
 describe('getUpcomingEvents', () => {
-  it('returns the single next upcoming event when one is next', async () => {
-    // during Keynote: upcoming is "Tweak your page in real time"
-    const clock = makeClock(new Date(2015, 0, 28, 10, 15, 0))
-    const result = await getUpcomingEvents(makeRepository(days), clock)
-    expect(result).toHaveLength(1)
-    expect(result[0].title).toBe('Tweak your page in real time')
-  })
-
-  it('returns all events when multiple start at the same time', async () => {
-    // before Talk A and B (both at 10:00am), should return both not Talk C
+  it('returns next N events when there are many upcoming', async () => {
+    // Before the conference starts — all events are upcoming
     const clock = makeClock(new Date(2015, 0, 28, 9, 0, 0))
-    const result = await getUpcomingEvents(makeRepository(daysWithSimultaneous), clock)
-    expect(result).toHaveLength(2)
-    expect(result.map((e) => e.title)).toContain('Talk A')
-    expect(result.map((e) => e.title)).toContain('Talk B')
-    expect(result.map((e) => e.title)).not.toContain('Talk C')
-  })
-
-  it('returns empty array after all sessions end (no upcoming)', async () => {
-    const clock = makeClock(new Date(2015, 0, 28, 18, 0, 0))
-    const result = await getUpcomingEvents(makeRepository(days), clock)
-    expect(result).toHaveLength(0)
-  })
-
-  it('returns empty array when no schedule for the date', async () => {
-    const clock = makeClock(new Date(2015, 0, 30, 10, 0, 0))
-    const result = await getUpcomingEvents(makeRepository(days), clock)
-    expect(result).toHaveLength(0)
-  })
-
-  it('returns the immediate next only (not all future ones)', async () => {
-    // before any sessions: earliest upcoming is Keynote at 10:00am, not the later ones
-    const clock = makeClock(new Date(2015, 0, 28, 9, 0, 0))
-    const result = await getUpcomingEvents(makeRepository(days), clock)
-    expect(result).toHaveLength(1)
+    const result = await getUpcomingEvents(makeRepository(days), clock, 3)
+    expect(result).toHaveLength(3)
     expect(result[0].title).toBe('Keynote')
+    expect(result[1].title).toBe('Talk A')
+    expect(result[2].title).toBe('Talk B')
   })
 
-  it('returns empty array when now is exactly the start time of an event (that event is ongoing)', async () => {
-    // exactly 10:00am: Keynote starts, it is ongoing not upcoming; next upcoming is "Tweak your page"
-    // But from getUpcomingEvents perspective: events starting strictly after now
-    // At exactly 10:00am, Keynote start === now so it is NOT upcoming
-    // "Tweak your page" starts at 10:30am which is > 10:00am so it IS upcoming
-    const clock = makeClock(new Date(2015, 0, 28, 10, 0, 0))
+  it('returns empty array when no upcoming events (after conference)', async () => {
+    // After the last event on day 2
+    const clock = makeClock(new Date(2015, 0, 29, 23, 0, 0))
     const result = await getUpcomingEvents(makeRepository(days), clock)
-    // Keynote is not upcoming (starts at now), next is "Tweak your page"
-    expect(result).toHaveLength(1)
-    expect(result[0].title).toBe('Tweak your page in real time')
+    expect(result).toEqual([])
+  })
+
+  it('returns remaining day 1 events plus all day 2 events when time-traveling to day 1 afternoon', async () => {
+    // During Talk B on day 1 (2:00-2:30pm) — Talk B is ongoing, Talk C is next on day 1, then all of day 2
+    const clock = makeClock(new Date(2015, 0, 28, 14, 10, 0)) // 2:10pm
+    const result = await getUpcomingEvents(makeRepository(days), clock, 10)
+    // Talk B starts at 2:00 which is NOT strictly after now (14:10 > 14:00), so Talk B is ongoing
+    // Talk C starts at 2:30 — strictly after 2:10, so included
+    // Day 2 Keynote starts at 10:00am Jan 29 — included
+    // Day 2 Talk starts at 10:30am Jan 29 — included
+    expect(result.map((e) => e.title)).toEqual([
+      'Talk C',
+      'Day 2 Keynote',
+      'Day 2 Talk',
+    ])
+  })
+
+  it('respects the limit parameter', async () => {
+    const clock = makeClock(new Date(2015, 0, 28, 9, 0, 0))
+    const result = await getUpcomingEvents(makeRepository(days), clock, 2)
+    expect(result).toHaveLength(2)
+  })
+
+  it('does not include the currently ongoing event (start is not strictly after now)', async () => {
+    // Exactly at the start of Keynote — it is ongoing, not upcoming
+    const clock = makeClock(new Date(2015, 0, 28, 10, 0, 0))
+    const result = await getUpcomingEvents(makeRepository(days), clock, 10)
+    expect(result.map((e) => e.title)).not.toContain('Keynote')
+    // Talk A starts at 10:30 — strictly after 10:00, so it should be upcoming
+    expect(result[0].title).toBe('Talk A')
   })
 })
